@@ -1,11 +1,13 @@
 const router = require('express').Router();
 
+const { hash, makeToken } = require("../helpers/auth-helpers")
+
+
+
 router.post('/register', (req, res) => {
   res.end('implement register, please!');
   /*
-    IMPLEMENT
-    You are welcome to build additional middlewares to help with the endpoint's functionality.
-
+  
     1- In order to register a new account the client must provide `username` and `password`:
       {
         "username": "Captain Marvel", // must not exist already in the `users` table

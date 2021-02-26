@@ -5,22 +5,28 @@ const jwt = require("jsonwebtoken");
 const jwtSecret = require("../config/secrets");
 
 function hash(password) {
-    const rounds = process.env.BCRYPT_ROUNDS || 8
+    const rounds = process.env.BCRYPT_ROUNDS || 8;
 
-    const hashedPassword = bcryptjs.hashSync(password, rounds)
+    const hashedPassword = bcryptjs.hashSync(password, rounds);
 
-    return hashedPassword
+    return hashedPassword;
 }
 
 function makeToken(user) {
-    const payload = { username: user.username, subject: user.id }
-    const options = { expiresIn: "1 hour"}
+    const payload = { username: user.username, subject: user.id };
 
-    return jwt.sign(payload, jwtSecret, options)
+    const options = { expiresIn: "500 seconds"};
+
+    return jwt.sign(payload, jwtSecret, options);
+}
+
+function isValid(user) {
+    return Boolean(user.username && user.password && typeof user.password === "string");
 }
 
 
 module.exports = {
     hash,
-    makeToken
+    makeToken,
+    isValid
 }

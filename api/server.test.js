@@ -1,50 +1,46 @@
 const request = require("supertest");
-
-const server = require("./server");
 const db = require("../data/dbConfig");
 const Auth = require('../api/auth/auth-model');
 
 // Write your tests here
-test('sanity', () => {
-  expect(true).toBe(false)
+
+beforeAll(async () => {
+  await db.migrate.latest()
 });
 
-describe("POST", () => {
-  beforeAll(async () => {
-    await db("users").truncate();
+
+describe("[POST] /register", () => {
+  const user1 = { username: "user1", password: "a12345" }; 
+  const user2 = { username: "user2", password: "b12345" }; 
+
+    it("responds with new user", async () => {
+      let res 
+      res = await request(Auth).post("/register").send(user1)
+      expect(res.body).toMatchObject({id:1, ...user1});
+
+      res = await request(Auth).post("/register").send(user2)
+      expect(res.body).toMatchObject({id:1, ...user2});
   });
 
-  it("adds a new user", async () => {
-    await Auth.insert({ username: "user1", password: "a12345" });
-    await Auth.insert({ username: "user2", password: "b12345" });
-    const user = await db("users");
+  describe("[POST /login", () => {
 
-    expect(user).toHaveLength(2);
-    expect(user[1].username).toBe("user2");
-  });
-
-  it("login", () => {
-    return request(server)
-      .post("api/auth/login")
-      .send({ username: "niki", password: "12345" })
-      .then(res => {
-        expect(res.type).toMatch(/json/i);
-      });
+    it("login", () => {
+      return request(Auth)
+          .post("/api/auth/login")
+          .send({ username: "user1", password: "a12345" })
+          .then(res => {
+              expect(res.type).toMatch(/json/i)
+          });
   });
 
   it("returns json from the jokes router", () => {
-    return request(server)
+    return request(Auth)
       .get("api/jokes")
       .then(res => {
         expect(res.type).toMatch(/json/i);
       });
   });
 
+});
 
-describe("GET /jokes", async () => {
-  await request(server)
-    .get("/api/jokes")
-    .then(res => expect(res.status).toBe(500))
-    .catch(err => console.log(err))
-  });
 });

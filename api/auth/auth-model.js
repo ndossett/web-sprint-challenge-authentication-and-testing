@@ -9,6 +9,7 @@ module.exports = {
 function findBy(username) {
     return db("users")
         .where(username)
+        .first()
 }
 
 function findById(id) {

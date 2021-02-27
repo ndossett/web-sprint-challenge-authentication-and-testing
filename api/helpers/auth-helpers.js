@@ -2,7 +2,7 @@ const bcryptjs = require("bcryptjs");
 
 const jwt = require("jsonwebtoken");
 
-const jwtSecret = require("../config/secrets");
+const { jwtSecret } = require("../config/secrets");
 
 function hash(password) {
     const rounds = process.env.BCRYPT_ROUNDS || 8;
@@ -13,15 +13,14 @@ function hash(password) {
 }
 
 function makeToken(user) {
-    const payload = { username: user.username, subject: user.id };
+    const payload = { userName: user.username, subject: user.id };
 
-    const options = { expiresIn: "500 seconds"};
-
+    const options = { expiresIn: "1 hour"};
     return jwt.sign(payload, jwtSecret, options);
 }
 
 function isValid(user) {
-    return Boolean(user.username && user.password && typeof user.password === "string");
+    return Boolean(user.username && user.password);
 }
 
 
